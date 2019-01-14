@@ -5,12 +5,12 @@ import Foundation
 public struct AnyBSONValue: Codable, Equatable, Hashable {
     // swiftlint:disable:next legacy_hashing
     public var hashValue: Int {
-        if let doc = self.value as? Document {
-            return doc.extendedJSON.hashValue
+        let prefix = String(UnicodeScalar(UInt8(self.value.bsonType.rawValue)))
+
+        if let document = self.value as? Document {
+            return "\(prefix)-\(document.extendedJSON)".hashValue
         } else {
-            let doc: Document = ["value": self.value]
-            // need to add some string to the beginning to ensure no collisions with the document case.
-            return ("EXT_JSON" + doc.extendedJSON).hashValue
+            return "\(prefix)-\(self.value)".hashValue
         }
     }
 
