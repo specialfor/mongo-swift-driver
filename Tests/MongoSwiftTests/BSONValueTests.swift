@@ -211,6 +211,18 @@ final class BSONValueTests: MongoSwiftTestCase {
         expect(map[doc]).to(equal(13))
         expect(map[json]).to(equal(14))
 
+        print("str: \(str.value)")
+        print("doc: \(doc.value)")
+        print("json: \(json.value)")
+
+        print("str: \(str.hashValue)")
+        print("doc: \(doc.hashValue)")
+        print("json: \(json.hashValue)")
+
+        print("str: \(str.hashStr)")
+        print("doc: \(doc.hashStr)")
+        print("json: \(json.hashStr)")
+
         expect(Set([str.hashValue, doc.hashValue, json.hashValue]).count).to(equal(3))
     }
 }

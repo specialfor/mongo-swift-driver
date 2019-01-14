@@ -14,6 +14,16 @@ public struct AnyBSONValue: Codable, Equatable, Hashable {
         }
     }
 
+    internal var hashStr: String {
+        let prefix = String(UnicodeScalar(UInt8(self.value.bsonType.rawValue)))
+
+        if let document = self.value as? Document {
+            return "\(prefix)-\(document.extendedJSON)"
+        } else {
+            return "\(prefix)-\(self.value)"
+        }
+    }
+
     /// The `BSONValue` wrapped by this struct.
     public let value: BSONValue
 
