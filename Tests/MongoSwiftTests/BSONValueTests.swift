@@ -219,9 +219,9 @@ final class BSONValueTests: MongoSwiftTestCase {
         print("doc: \(doc.hashValue)")
         print("json: \(json.hashValue)")
 
-        print("str: \(str.hashStr)")
-        print("doc: \(doc.hashStr)")
-        print("json: \(json.hashStr)")
+        print("str: \([UInt8](str.hashStr.utf8))")
+        print("doc: \([UInt8](doc.hashStr.utf8))")
+        print("json: \([UInt8](json.hashStr.utf8))")
 
         expect(Set([str.hashValue, doc.hashValue, json.hashValue]).count).to(equal(3))
     }
