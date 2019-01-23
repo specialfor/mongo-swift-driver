@@ -162,9 +162,11 @@ extension Document {
 
     /// Retrieves the value associated with `for` as a `BSONValue?`, which can be nil if the key does not exist in the
     /// `Document`.
+    ///
+    /// - Throws: `RuntimeError.internalError` if the BSON buffer is too small (< 5 bytes).
     internal func getValue(for key: String) throws -> BSONValue? {
         guard let iter = DocumentIterator(forDocument: self) else {
-            throw MongoError.bsonDecodeError(message: "BSON buffer is unexpectedly too small (< 5 bytes)")
+            throw RuntimeError.internalError(message: "BSON buffer is unexpectedly too small (< 5 bytes)")
         }
 
         guard iter.move(to: key) else {
@@ -203,7 +205,7 @@ extension Document {
     internal mutating func merge(_ doc: Document) throws {
         self.copyStorageIfRequired()
         guard bson_concat(self.data, doc.data) else {
-            throw MongoError.bsonEncodeError(message: "Failed to merge \(doc) with \(self). This is likely due to " +
+            throw RuntimeError.internalError(message: "Failed to merge \(doc) with \(self). This is likely due to " +
                     "the merged document being too large.")
         }
         self.count += doc.count
@@ -405,7 +407,7 @@ extension Document: BSONValue {
 
     public func encode(to storage: DocumentStorage, forKey key: String) throws {
         guard bson_append_document(storage.pointer, key, Int32(key.count), self.data) else {
-            throw bsonEncodeError(value: self, forKey: key)
+            throw bsonTooLargeError(value: self, forKey: key)
         }
     }
 
@@ -420,7 +422,7 @@ extension Document: BSONValue {
         bson_iter_document(&iter.iter, &length, document)
 
         guard let docData = bson_new_from_data(document.pointee, Int(length)) else {
-            throw MongoError.bsonDecodeError(message: "Failed to create a bson_t from document data")
+            throw RuntimeError.internalError(message: "Failed to create a bson_t from document data")
         }
 
         return self.init(fromPointer: docData)
