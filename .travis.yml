@@ -7,6 +7,7 @@ jobs:
     - stage: lint
       os: osx
       install: ./Tests/Scripts/install_dependencies.sh swiftlint
+      before_script: skip
       script: ${PWD}/swiftlint/swiftlint --strict
 
     - stage: code coverage
@@ -18,29 +19,79 @@ jobs:
         - INSTALLER=Tests/Scripts/install_dependencies.sh
         - MONGODIR=${PWD}/mongodb-${MONGODB_VERSION}
       install: ./INSTALLER libmongoc; ./INSTALLER mongodb
-      before_script:
       script: make coverage
       after_success: bash <(curl -s https://codecov.io/bash)
 
     - stage: tests
+      os: osx
+      osx_image: xcode9.4
       env:
-        global:
-          - LIBMONGOC_VERSION=r1.13
-          - MONGODB_VERSION=3.6.5
-          - INSTALLER=Tests/Scripts/install_dependencies.sh
-          - MONGODIR=${PWD}/mongodb-${MONGODB_VERSION}
-        matrix:
-          - SWIFT_VERSION=4.0 
-          - SWIFT_VERSION=4.1
-          - SWIFT_VERSION=4.2
-      os:
-        - osx
-        - linux
-      osx_image:
-        - xcode9.4
-        - xcode10.1
-      install: ./INSTALLER libmongoc; ./INSTALLER mongodb;  eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
-      before_script: mkdir ${MONGODIR}/data; ${MONGODIR}/bin/mongod --dbpath ${MONGODIR}/data --logpath ${MONGODIR}/mongodb.log --fork
-      script:
-        - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make test-pretty; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make test; fi
+        - LIBMONGOC_VERSION=r1.13
+        - MONGODB_VERSION=3.6.5
+        - SWIFT_VERSION=4.0
+        - INSTALLER=Tests/Scripts/install_dependencies.sh
+
+    - stage: tests
+      os: osx
+      osx_image: xcode9.4
+      env:
+        - LIBMONGOC_VERSION=r1.13
+        - MONGODB_VERSION=3.6.5
+        - SWIFT_VERSION=4.1
+        - INSTALLER=Tests/Scripts/install_dependencies.sh
+
+    - stage: tests
+      os: osx
+      osx_image: xcode10.1
+      env:
+        - LIBMONGOC_VERSION=r1.13
+        - MONGODB_VERSION=3.6.5
+        - SWIFT_VERSION=4.1
+        - INSTALLER=Tests/Scripts/install_dependencies.sh
+
+    - stage: tests
+      os: osx
+      osx_image: xcode10.1
+      env:
+        - LIBMONGOC_VERSION=r1.13
+        - MONGODB_VERSION=3.6.5
+        - SWIFT_VERSION=4.2
+        - INSTALLER=Tests/Scripts/install_dependencies.sh
+
+    - stage: tests
+      os: linux
+      env:
+        - LIBMONGOC_VERSION=r1.13
+        - MONGODB_VERSION=3.6.5
+        - SWIFT_VERSION=4.0 
+        - INSTALLER=Tests/Scripts/install_dependencies.sh
+
+    - stage: tests
+      os: linux
+      env:
+        - LIBMONGOC_VERSION=r1.13
+        - MONGODB_VERSION=3.6.5
+        - SWIFT_VERSION=4.1
+        - INSTALLER=Tests/Scripts/install_dependencies.sh
+
+    - stage: tests
+      os: linux
+      env:
+        - LIBMONGOC_VERSION=r1.13
+        - MONGODB_VERSION=3.6.5
+        - SWIFT_VERSION=4.2
+        - INSTALLER=Tests/Scripts/install_dependencies.sh 
+
+install: 
+  - ./INSTALLER libmongoc
+  - ./INSTALLER mongodb
+  - eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
+
+before_script:
+  - MONGODIR=${PWD}/mongodb-${MONGODB_VERSION}
+  - mkdir ${MONGODIR}/data
+  - ${MONGODIR}/bin/mongod --dbpath ${MONGODIR}/data --logpath ${MONGODIR}/mongodb.log --fork
+
+script:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make test-pretty; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make test; fi
