@@ -17,7 +17,7 @@ all:
 project:
 	swift package generate-xcodeproj
 	@$(call check_for_gem,xcodeproj)
-	ruby add_json_files.rb
+	ruby Tests/Scripts/add_json_files.rb
 
 test:
 	swift test -v $(FILTERARG)
@@ -30,7 +30,7 @@ lint:
 	swiftlint autocorrect
 	swiftlint
 
-cov:
+coverage:
 	make project
 	xcodebuild -project MongoSwift.xcodeproj -scheme MongoSwift-Package -enableCodeCoverage YES build test
 
