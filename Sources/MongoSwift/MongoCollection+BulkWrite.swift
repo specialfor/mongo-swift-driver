@@ -393,7 +393,9 @@ public struct BulkWriteResult {
         if let upserted = try reply.getValue(for: "upserted") as? [Document] {
             for upsert in upserted {
                 guard let index = try upsert.getValue(for: "index") as? Int else {
-                    throw MongoError.typeError(message: "Could not cast upserted index to `Int`")
+                    throw RuntimeError.internalError(
+                            message: "Malformed server response: Could not cast upserted index to `Int`"
+                    )
                 }
                 upsertedIds[index] = upsert["_id"]
             }
