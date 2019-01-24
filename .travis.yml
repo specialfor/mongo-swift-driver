@@ -10,34 +10,34 @@ matrix:
     - name: Code coverage
       os: osx
       osx_image: xcode10.1
-      env: MONGODB_VERSION=3.6.5 TASK=COV
+      env: MONGODB_VERSION=3.6.5 LIBMONGOC_VERSION=r.1.13 TASK=COV
     - os: osx
       osx_image: xcode9.4 
-      env: MONGODB_VERSION=3.6.5 SWIFT_VERSION=4.0 TASK=TEST
+      env: MONGODB_VERSION=3.6.5 LIBMONGOC_VERSION=r.1.13 SWIFT_VERSION=4.0 TASK=TEST
     - os: osx
       osx_image: xcode9.4
-      env: MONGODB_VERSION=3.6.5 SWIFT_VERSION=4.1 TASK=TEST
+      env: MONGODB_VERSION=3.6.5 LIBMONGOC_VERSION=r.1.13 SWIFT_VERSION=4.1 TASK=TEST
     - os: osx
       osx_image: xcode10.1
-      env: MONGODB_VERSION=3.6.5 SWIFT_VERSION=4.1 TASK=TEST
+      env: MONGODB_VERSION=3.6.5 LIBMONGOC_VERSION=r.1.13 SWIFT_VERSION=4.1 TASK=TEST
     - os: osx
       osx_image: xcode10.1
-      env: MONGODB_VERSION=3.6.5 SWIFT_VERSION=4.2 TASK=TEST
+      env: MONGODB_VERSION=3.6.5 LIBMONGOC_VERSION=r.1.13 SWIFT_VERSION=4.2 TASK=TEST
     - os: linux
-      env: MONGODB_VERSION=3.6.5 SWIFT_VERSION=4.0 TASK=TEST
+      env: MONGODB_VERSION=3.6.5 LIBMONGOC_VERSION=r.1.13 SWIFT_VERSION=4.0 TASK=TEST
     - os: linux
-      env: MONGODB_VERSION=3.6.5 SWIFT_VERSION=4.1 TASK=TEST
+      env: MONGODB_VERSION=3.6.5 LIBMONGOC_VERSION=r.1.13 SWIFT_VERSION=4.1 TASK=TEST
     - os: linux
-      env: MONGODB_VERSION=3.6.5 SWIFT_VERSION=4.2 TASK=TEST
+      env: MONGODB_VERSION=3.6.5 LIBMONGOC_VERSION=r.1.13 SWIFT_VERSION=4.2 TASK=TEST
 
 install:
-  - export INSTALLER=Tests/Scripts/install-dependencies.sh
+  - INSTALLER=Tests/Scripts/install-dependencies.sh
   - if [[ "$TASK" == "TEST" ]]; then ./${INSTALLER} libmongoc; eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"; ./${INSTALLER} mongodb; fi
   - if [[ "$TASK" == "LINT" ]]; then ./${INSTALLER} swiftlint; fi
   - if [[ "$TASK" == "COV" ]]; then ./${INSTALLER} libmongoc; ./${INSTALLER} mongodb; fi
 
 before_script:
-  - export MONGODIR=${PWD}/mongodb-${MONGODB_VERSION}
+  - MONGODIR=${PWD}/mongodb-${MONGODB_VERSION}
   - if [[ "$TASK" != "LINT" ]]; then mkdir ${MONGODIR}/data; ${MONGODIR}/bin/mongod --dbpath ${MONGODIR}/data --logpath ${MONGODIR}/mongodb.log --fork; fi
 
 script:
