@@ -31,7 +31,7 @@ matrix:
       env: MONGODB_VERSION=3.6.5 LIBMONGOC_VERSION=r.1.13 SWIFT_VERSION=4.2 TASK=TEST
 
 install:
-  - INSTALLER={$PWD}/Tests/Scripts/install_dependencies.sh
+  - INSTALLER=Tests/Scripts/install_dependencies.sh
   - if [[ "$TASK" == "TEST" ]]; then ./${INSTALLER} libmongoc; eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"; ./${INSTALLER} mongodb; fi
   - if [[ "$TASK" == "LINT" ]]; then ./${INSTALLER} swiftlint; fi
   - if [[ "$TASK" == "COV" ]]; then ./${INSTALLER} libmongoc; ./${INSTALLER} mongodb; fi
