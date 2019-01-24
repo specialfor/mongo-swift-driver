@@ -41,7 +41,8 @@ before_script:
   - if [[ "$TASK" != "LINT" ]]; then mkdir ${MONGODIR}/data; ${MONGODIR}/bin/mongod --dbpath ${MONGODIR}/data --logpath ${MONGODIR}/mongodb.log --fork; fi
 
 script:
-  - if [[ "$TASK" == "TEST" ]]; then make test-pretty; fi
+  - if [[ "$TASK" == "TEST" ]] && [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make test-pretty; fi
+  - if [[ "$TASK" == "TEST" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make test; fi
   - if [[ "$TASK" == "LINT" ]]; then ${PWD}/swiftlint/swiftlint --strict; fi 
   - if [[ "$TASK" == "COV" ]]; then make coverage; fi
 

@@ -23,9 +23,8 @@ test:
 	swift test -v $(FILTERARG)
 
 test-pretty:
-	make
 	@$(call check_for_gem,xcpretty)
-	swift test $(FILTERARG) 2>&1 | xcpretty && exit ${PIPESTATUS[0]}
+	set -o pipefail && swift test $(FILTERARG) 2>&1 | xcpretty
 
 lint:
 	swiftlint autocorrect
