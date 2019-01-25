@@ -55,7 +55,7 @@ install:
   - export MONGODB_VERSION=3.6.5
   - ./${INSTALLER} libmongoc
   - ./${INSTALLER} mongodb
-  - if [[ "$TRAVIS_STAGE_NAME" != "Code coverage" ]] eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
+  - if [[ "$TRAVIS_STAGE_NAME" != "Code coverage" ]]; then eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"; fi
 
 before_script:
   - MONGODIR=${PWD}/mongodb-${MONGODB_VERSION}
