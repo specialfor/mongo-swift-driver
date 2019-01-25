@@ -39,12 +39,6 @@ jobs:
     - stage: code coverage
       os: osx
       osx_image: xcode10.1
-      env:
-        - MONGODB_VERSION=3.6.5
-        - LIBMONGOC_VERSION=r1.13
-        - INSTALLER=Tests/Scripts/install_dependencies.sh
-        - MONGODIR=${PWD}/mongodb-${MONGODB_VERSION}
-      install: ./${INSTALLER} libmongoc; ./${INSTALLER} mongodb
       script: make coverage
       after_success: bash <(curl -s https://codecov.io/bash)
 
@@ -61,7 +55,7 @@ install:
   - export MONGODB_VERSION=3.6.5
   - ./${INSTALLER} libmongoc
   - ./${INSTALLER} mongodb
-  - eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
+  - if [[ "$TRAVIS_STAGE_NAME" != "Code coverage" ]] eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
 
 before_script:
   - MONGODIR=${PWD}/mongodb-${MONGODB_VERSION}
