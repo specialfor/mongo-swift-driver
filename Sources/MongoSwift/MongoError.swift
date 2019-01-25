@@ -239,7 +239,7 @@ internal func bsonTooLargeError(value: BSONValue, forKey: String) -> MongoSwiftE
         "Failed to set value for key \(forKey) to \(value) with BSON type \(value.bsonType): document too large")
 }
 
-internal func wrongIterTypeError(iter: DocumentIterator, expected type: BSONValue.Type) -> MongoSwiftError {
+internal func wrongIterTypeError(_ iter: DocumentIterator, expected type: BSONValue.Type) -> MongoSwiftError {
     return UserError.logicError(message: "Tried to retreive a \(type) from an iterator whose next type " +
             "is \(iter.currentType) for key \(iter.currentKey)")
 }

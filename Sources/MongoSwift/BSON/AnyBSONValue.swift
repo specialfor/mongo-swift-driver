@@ -92,9 +92,15 @@ public struct AnyBSONValue: Codable, Equatable, Hashable {
         if let bsonDecoder = decoder as? _BSONDecoder {
             if bsonDecoder.storage.topContainer is Date {
                 guard case .bsonDateTime = bsonDecoder.options.dateDecodingStrategy else {
-                    throw DecodingError.dataCorruptedError(in: bsonDecoder, debugDescription: "Got a BSON datetime " +
-                            "but was expecting another format. To decode from BSON datetimes, use the default" +
-                            " .bsonDateTime DateDecodingStrategy.")
+                    throw DecodingError.typeMismatch(
+                            AnyBSONValue.self,
+                            DecodingError.Context(
+                                    codingPath: bsonDecoder.codingPath,
+                                    debugDescription: "Got a BSON datetime but was expecting another format. To " +
+                                            "decode from BSON datetimes, use the default .bsonDateTime " +
+                                            "DateDecodingStrategy."
+                            )
+                    )
                 }
             }
             self.value = bsonDecoder.storage.topContainer
