@@ -194,7 +194,7 @@ extension Document {
      *
      */
     internal func get<T: BSONValue>(_ key: String) throws -> T {
-        guard let value = self[key] as? T else {
+        guard let value = try self.getValue(for: key) as? T else {
             throw RuntimeError.internalError(message: "Could not cast value for key \(key) to type \(T.self)")
         }
         return value

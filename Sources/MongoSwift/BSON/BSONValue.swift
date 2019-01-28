@@ -582,7 +582,7 @@ public struct MaxKey: BSONValue, Equatable, Codable {
         guard iter.currentType == .maxKey else {
             throw wrongIterTypeError(iter, expected: MaxKey.self)
         }
-        return self.init()
+        return MaxKey()
     }
 
     public static func == (lhs: MaxKey, rhs: MaxKey) -> Bool { return true }
@@ -607,7 +607,7 @@ public struct MinKey: BSONValue, Equatable, Codable {
         guard iter.currentType == .minKey else {
             throw wrongIterTypeError(iter, expected: MinKey.self)
         }
-        return self.init()
+        return MinKey()
     }
 
     public static func == (lhs: MinKey, rhs: MinKey) -> Bool { return true }
@@ -833,9 +833,14 @@ extension String: BSONValue {
 
     public static func from(iterator iter: DocumentIterator) throws -> String {
         var length: UInt32 = 0
-        guard let strValue = bson_iter_utf8(&iter.iter, &length) else {
+        guard iter.currentType == .string, let strValue = bson_iter_utf8(&iter.iter, &length) else {
            throw wrongIterTypeError(iter, expected: String.self)
         }
+
+        guard bson_utf8_validate(strValue, Int(length), false) else {
+            throw RuntimeError.internalError(message: "String \(strValue) not valid UTF-8")
+        }
+
         return self.init(cString: strValue)
     }
 }
@@ -857,7 +862,7 @@ internal struct Symbol: BSONValue {
 
     internal static func asString(from iter: DocumentIterator) throws -> String {
         var length: UInt32 = 0
-        guard let strValue = bson_iter_symbol(&iter.iter, &length) else {
+        guard iter.currentType == .symbol, let strValue = bson_iter_symbol(&iter.iter, &length) else {
             throw wrongIterTypeError(iter, expected: Symbol.self)
         }
         return String(cString: strValue)
@@ -893,14 +898,14 @@ public struct Timestamp: BSONValue, Equatable, Codable {
     }
 
     public static func from(iterator iter: DocumentIterator) throws -> Timestamp {
-        var t: UInt32 = 0
-        var i: UInt32 = 0
-
         guard iter.currentType == .timestamp else {
             throw wrongIterTypeError(iter, expected: Timestamp.self)
         }
+        var t: UInt32 = 0
+        var i: UInt32 = 0
 
         bson_iter_timestamp(&iter.iter, &t, &i)
+
         return self.init(timestamp: t, inc: i)
     }
 
